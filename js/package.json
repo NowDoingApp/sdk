@@ -11,7 +11,7 @@
   },
   "bugs": "https://github.com/NowDoingApp/sdk/issues",
   "license": "MIT",
-  "author": "Mattes <m.mattes@meey.de>",
+  "author": "NowDoing <hello@nowdoing.app>",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
