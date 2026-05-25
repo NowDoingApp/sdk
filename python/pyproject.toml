@@ -9,7 +9,7 @@ description = "Client SDK for the NowDoing macOS app loopback HTTP API."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "Mattes", email = "m.mattes@meey.de" }]
+authors = [{ name = "NowDoing", email = "hello@nowdoing.app" }]
 keywords = ["nowdoing", "time-tracking", "macos", "sdk", "client"]
 classifiers = [
   "Development Status :: 4 - Beta",
