@@ -25,3 +25,26 @@ class StartActivityResult:
     activity_id: str
     activity_name: str
     created: bool
+
+
+@dataclass(frozen=True)
+class StatusActivity:
+    activity_id: str
+    activity_name: str
+
+
+@dataclass(frozen=True)
+class Status:
+    is_tracking: bool
+    is_on_break: bool
+    current_activity: StatusActivity | None
+    today_seconds: int
+
+
+@dataclass(frozen=True)
+class LogEntryResult:
+    entry_id: str
+    activity_id: str
+    activity_name: str
+    duration_minutes: int
+    created: bool

@@ -13,12 +13,20 @@ from .errors import (
     NowDoingUnavailableError,
     NowDoingValidationError,
 )
-from .models import ActivitySearchItem, CurrentActivity, StartActivityResult
+from .models import (
+    ActivitySearchItem,
+    CurrentActivity,
+    LogEntryResult,
+    StartActivityResult,
+    Status,
+    StatusActivity,
+)
 
 __all__ = [
     "ActivitySearchItem",
     "AsyncNowDoingClient",
     "CurrentActivity",
+    "LogEntryResult",
     "NowDoingAuthError",
     "NowDoingClient",
     "NowDoingError",
@@ -28,5 +36,7 @@ __all__ = [
     "NowDoingUnavailableError",
     "NowDoingValidationError",
     "StartActivityResult",
+    "Status",
+    "StatusActivity",
 ]
 __version__ = "0.1.0"

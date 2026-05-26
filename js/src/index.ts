@@ -12,8 +12,12 @@ export type {
   ActivitySearchItem,
   BranchChangePayload,
   CurrentActivity,
+  LogEntryRequest,
+  LogEntryResult,
   NowDoingClientOptions,
   SearchActivitiesOptions,
   StartActivityRequest,
   StartActivityResult,
+  Status,
+  StatusActivity,
 } from "./types.js";

@@ -34,6 +34,35 @@ export interface SearchActivitiesOptions {
   limit?: number;
 }
 
+export interface StatusActivity {
+  activityID: string;
+  activityName: string;
+}
+
+export interface Status {
+  isTracking: boolean;
+  isOnBreak: boolean;
+  currentActivity: StatusActivity | null;
+  /** Tracked seconds across today, regardless of whether tracking is active right now. */
+  todaySeconds: number;
+}
+
+export interface LogEntryRequest {
+  activityID?: string;
+  name?: string;
+  durationMinutes: number;
+  note?: string;
+  createIfMissing?: boolean;
+}
+
+export interface LogEntryResult {
+  entryID: string;
+  activityID: string;
+  activityName: string;
+  durationMinutes: number;
+  created: boolean;
+}
+
 export interface NowDoingClientOptions {
   /** Shared secret from NowDoing → Einstellungen → Integrationen. Falls back to `NOWDOING_TOKEN`. */
   token?: string;

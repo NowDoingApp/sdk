@@ -4,10 +4,13 @@ import type {
   ActivitySearchItem,
   BranchChangePayload,
   CurrentActivity,
+  LogEntryRequest,
+  LogEntryResult,
   NowDoingClientOptions,
   SearchActivitiesOptions,
   StartActivityRequest,
   StartActivityResult,
+  Status,
 } from "./types.js";
 
 const DEFAULT_HOST = "127.0.0.1";
@@ -108,6 +111,49 @@ export class NowDoingClient {
     );
     if (!data.result) {
       throw new NowDoingError("startActivity: missing result in response.");
+    }
+    return data.result;
+  }
+
+  async stopActivity(): Promise<void> {
+    await this.request<unknown>("POST", "/activities/stop", {});
+  }
+
+  async getStatus(): Promise<Status> {
+    const data = await this.request<RequestEnvelope<Status>>("GET", "/status");
+    if (!data.result) {
+      throw new NowDoingError("getStatus: missing result in response.");
+    }
+    return data.result;
+  }
+
+  async logEntry(request: LogEntryRequest): Promise<LogEntryResult> {
+    if (!request.activityID && !request.name) {
+      throw new NowDoingError("logEntry: provide either activityID or name.");
+    }
+    if (
+      !Number.isInteger(request.durationMinutes) ||
+      request.durationMinutes <= 0
+    ) {
+      throw new NowDoingError(
+        "logEntry: durationMinutes must be a positive integer.",
+      );
+    }
+    const body: Record<string, unknown> = {
+      durationMinutes: request.durationMinutes,
+      createIfMissing: request.createIfMissing ?? false,
+    };
+    if (request.activityID !== undefined) body.activityID = request.activityID;
+    if (request.name !== undefined) body.name = request.name;
+    if (request.note !== undefined) body.note = request.note;
+
+    const data = await this.request<RequestEnvelope<LogEntryResult>>(
+      "POST",
+      "/entries",
+      body,
+    );
+    if (!data.result) {
+      throw new NowDoingError("logEntry: missing result in response.");
     }
     return data.result;
   }

@@ -10,17 +10,26 @@ import httpx
 from ._base import (
     DEFAULT_TIMEOUT,
     build_branch_body,
+    build_log_entry_body,
     build_request,
     build_search_target,
     build_start_body,
     handle_response,
     parse_current,
+    parse_log_entry_result,
     parse_search,
     parse_start_result,
+    parse_status,
     resolve_config,
 )
 from .errors import NowDoingError
-from .models import ActivitySearchItem, CurrentActivity, StartActivityResult
+from .models import (
+    ActivitySearchItem,
+    CurrentActivity,
+    LogEntryResult,
+    StartActivityResult,
+    Status,
+)
 
 
 class AsyncNowDoingClient:
@@ -87,6 +96,26 @@ class AsyncNowDoingClient:
     ) -> StartActivityResult:
         body = build_start_body(activity_id, name, create_if_missing)
         return parse_start_result(await self._request("POST", "/activities/start", body))
+
+    async def stop_activity(self) -> None:
+        await self._request("POST", "/activities/stop", {})
+
+    async def get_status(self) -> Status:
+        return parse_status(await self._request("GET", "/status"))
+
+    async def log_entry(
+        self,
+        *,
+        duration_minutes: int,
+        activity_id: str | None = None,
+        name: str | None = None,
+        note: str | None = None,
+        create_if_missing: bool = False,
+    ) -> LogEntryResult:
+        body = build_log_entry_body(
+            activity_id, name, duration_minutes, note, create_if_missing,
+        )
+        return parse_log_entry_result(await self._request("POST", "/entries", body))
 
     async def notify_branch_change(
         self,

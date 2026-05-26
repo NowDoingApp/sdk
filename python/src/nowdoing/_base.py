@@ -9,7 +9,14 @@ from urllib.parse import urlencode
 
 from ._auth import make_nonce, sign_request, timestamp_seconds
 from .errors import NowDoingError, NowDoingHttpError, map_http_error
-from .models import ActivitySearchItem, CurrentActivity, StartActivityResult
+from .models import (
+    ActivitySearchItem,
+    CurrentActivity,
+    LogEntryResult,
+    StartActivityResult,
+    Status,
+    StatusActivity,
+)
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 39847
@@ -147,6 +154,64 @@ def build_start_body(
         body["activityID"] = activity_id
     if name is not None:
         body["name"] = name
+    return body
+
+
+def parse_status(payload: Any) -> Status:
+    if not isinstance(payload, dict) or "result" not in payload:
+        raise NowDoingHttpError(500, "missing result in /status response")
+    result = payload["result"]
+    activity_payload = result.get("currentActivity")
+    activity: StatusActivity | None
+    if isinstance(activity_payload, dict):
+        activity = StatusActivity(
+            activity_id=activity_payload["activityID"],
+            activity_name=activity_payload["activityName"],
+        )
+    else:
+        activity = None
+    return Status(
+        is_tracking=bool(result["isTracking"]),
+        is_on_break=bool(result["isOnBreak"]),
+        current_activity=activity,
+        today_seconds=int(result["todaySeconds"]),
+    )
+
+
+def parse_log_entry_result(payload: Any) -> LogEntryResult:
+    if not isinstance(payload, dict) or "result" not in payload:
+        raise NowDoingHttpError(500, "missing result in /entries response")
+    result = payload["result"]
+    return LogEntryResult(
+        entry_id=result["entryID"],
+        activity_id=result["activityID"],
+        activity_name=result["activityName"],
+        duration_minutes=int(result["durationMinutes"]),
+        created=bool(result["created"]),
+    )
+
+
+def build_log_entry_body(
+    activity_id: str | None,
+    name: str | None,
+    duration_minutes: int,
+    note: str | None,
+    create_if_missing: bool,
+) -> dict[str, Any]:
+    if activity_id is None and name is None:
+        raise NowDoingError("log_entry: provide either activity_id or name.")
+    if not isinstance(duration_minutes, int) or duration_minutes <= 0:
+        raise NowDoingError("log_entry: duration_minutes must be a positive integer.")
+    body: dict[str, Any] = {
+        "durationMinutes": duration_minutes,
+        "createIfMissing": create_if_missing,
+    }
+    if activity_id is not None:
+        body["activityID"] = activity_id
+    if name is not None:
+        body["name"] = name
+    if note is not None:
+        body["note"] = note
     return body
 
 
